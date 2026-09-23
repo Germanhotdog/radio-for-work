@@ -1,0 +1,342 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #20242b;
+  background: #eef0f4;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button, input { font: inherit; }
+
+.app-shell {
+  align-items: center;
+  background: radial-gradient(circle at 50% 0%, #fff 0%, #eef0f4 58%, #dfe3e9 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 24px;
+  position: relative;
+}
+
+.app-shell::before,
+.app-shell::after {
+  border: 1px solid rgba(116, 130, 152, 0.1);
+  border-radius: 50%;
+  content: "";
+  height: 600px;
+  position: absolute;
+  width: 600px;
+}
+
+.app-shell::before { right: -290px; top: -270px; }
+.app-shell::after { bottom: -440px; left: -300px; }
+
+.radio-card {
+  background: #fff;
+  border: 1px solid #dce0e6;
+  border-radius: 18px;
+  box-shadow: 0 24px 50px rgba(36, 47, 64, 0.16);
+  max-width: 390px;
+  padding: 20px 20px 24px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.radio-device {
+  display: block;
+  max-width: 390px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.power-button {
+  align-items: center;
+  background: #dfe2e8;
+  border: 1px solid #c6ccd5;
+  border-radius: 8px 0 0 8px;
+  color: #5c6674;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 1px;
+  position: absolute;
+  left: -19px;
+  top: 64px;
+  width: 20px;
+  z-index: 2;
+}
+
+.power-button:hover {
+  background: #e8ebef;
+  color: #087b4c;
+}
+
+.power-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.power-icon {
+  color: #07834e;
+  font-size: 0.6rem;
+}
+
+.power-hint {
+  align-items: center;
+  animation: hint-float 2s ease-in-out infinite;
+  color: #687384;
+  display: flex;
+  font-size: 0.68rem;
+  gap: 5px;
+  left: -106px;
+  position: absolute;
+  top: 75px;
+  white-space: nowrap;
+}
+
+.power-hint-arrow {
+  color: #07834e;
+  font-size: 0.9rem;
+  animation: hint-arrow 1s ease-in-out infinite;
+}
+
+@keyframes hint-float {
+  0%, 100% { opacity: 0.55; transform: translateX(0); }
+  50% { opacity: 1; transform: translateX(-3px); }
+}
+
+@keyframes hint-arrow {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .power-hint, .power-hint-arrow { animation: none; }
+}
+
+
+.topline, .player-controls, .volume-control {
+  align-items: center;
+  display: flex;
+}
+
+.topline { justify-content: space-between; }
+
+.brand-mark {
+  color: #1f252d;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.live-label {
+  align-items: center;
+  color: #5d6878;
+  display: flex;
+  font-size: 0.68rem;
+  gap: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.live-dot {
+  background: #20a56d;
+  border-radius: 50%;
+  box-shadow: 0 0 0 5px rgba(32, 165, 109, 0.12);
+  height: 7px;
+  width: 7px;
+}
+
+.station-art {
+  background: linear-gradient(145deg, #dfe2e8, #c8ccd4);
+  border: 1px solid #c2c7cf;
+  border-radius: 12px;
+  color: #20242b;
+  display: flex;
+  flex-direction: column;
+  height: 208px;
+  justify-content: space-between;
+  margin: 18px 0 22px;
+  overflow: hidden;
+  padding: 15px;
+}
+
+.station-art:not(.station-art-on) {
+  background: #dfe2e8;
+}
+
+.display-topline, .display-footer {
+  color: #495363;
+  display: flex;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  justify-content: space-between;
+  letter-spacing: 0.08em;
+  width: 100%;
+}
+
+.display-topline span:last-child { color: #087b4c; }
+.display-channel { align-self: flex-start; font-size: 1.25rem; margin-top: 8px; }
+
+.display-frequency {
+  align-items: baseline;
+  display: flex;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: clamp(2.7rem, 13vw, 4.3rem);
+  font-weight: 800;
+  letter-spacing: -0.08em;
+  line-height: 0.9;
+  margin: 0 auto;
+}
+
+.display-frequency small {
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  margin-left: 8px;
+}
+
+.display-meter {
+  align-items: flex-end;
+  display: flex;
+  gap: 3px;
+  height: 18px;
+  width: 100%;
+}
+
+.display-meter span {
+  background: #1e9b6b;
+  height: 5px;
+  opacity: 0.8;
+  width: 5px;
+}
+
+.display-meter span:nth-child(3n) { height: 10px; }
+.display-meter span:nth-child(4n) { height: 15px; }
+
+.eyebrow {
+  color: #2f69bc;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: clamp(2.2rem, 9vw, 3.4rem);
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+  margin: 0;
+}
+
+.subtitle { color: #6b7482; margin: 10px 0 22px; }
+
+.channel-picker {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.channel-button {
+  background: #eef0f4;
+  border: 1px solid #d8dde5;
+  border-radius: 50%;
+  color: #27313e;
+  cursor: pointer;
+  font-size: 1.2rem;
+  height: 42px;
+  line-height: 1;
+  padding: 0;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  width: 42px;
+}
+
+.channel-button:hover {
+  background: #e0e6ee;
+  border-color: #9aa8ba;
+  color: #17202c;
+}
+
+.channel-button:disabled, .power-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.channel-button:disabled:hover, .power-button:disabled:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.channel-name {
+  color: #28323e;
+  flex: 1;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.channel-name small {
+  color: #687384;
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+.player-controls {
+  border-top: 1px solid #e1e4e9;
+  gap: 18px;
+  padding-top: 22px;
+}
+
+.status { display: flex; flex-direction: column; gap: 5px; }
+.status strong { font-size: 0.95rem; }
+.status span { color: #727c8b; font-size: 0.8rem; }
+
+.volume-control {
+  color: #6b7482;
+  font-size: 0.78rem;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.volume-control input { accent-color: #176cbf; flex: 1; }
+.volume-control > span:last-child { min-width: 34px; text-align: right; }
+
+.error-message {
+  color: #b63d4a;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 18px 0 0;
+}
+
+.footer-note {
+  color: #7b8492;
+  font-size: 0.72rem;
+  margin: 18px 0 0;
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+@media (max-width: 520px) {
+  .radio-card { padding: 18px; }
+  .station-art { height: 190px; }
+}
