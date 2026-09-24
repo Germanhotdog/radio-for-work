@@ -124,11 +124,14 @@ function App() {
   }
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" onClick={() => isChannelNavOpen && setIsChannelNavOpen(false)}>
       <button
         className="channel-nav-toggle"
         type="button"
-        onClick={() => setIsChannelNavOpen((isOpen) => !isOpen)}
+        onClick={(event) => {
+          event.stopPropagation();
+          setIsChannelNavOpen((isOpen) => !isOpen);
+        }}
         aria-expanded={isChannelNavOpen}
         aria-controls="channel-navigation"
         aria-label={isChannelNavOpen ? "Hide radio channel navigation" : "Show radio channel navigation"}
@@ -137,7 +140,12 @@ function App() {
         <span>{isChannelNavOpen ? "Hide channels" : "Channels"}</span>
       </button>
       {isChannelNavOpen && (
-        <aside className="channel-nav" id="channel-navigation" aria-label="Radio channel navigation">
+        <aside
+          className="channel-nav"
+          id="channel-navigation"
+          aria-label="Radio channel navigation"
+          onClick={(event) => event.stopPropagation()}
+        >
           <div className="channel-nav-header">
             <div>
               <p className="channel-nav-eyebrow">扮公 Radio</p>
@@ -170,6 +178,10 @@ function App() {
         </aside>
       )}
       <div className="radio-device">
+        <div className="antenna" aria-hidden="true">
+          <span className="antenna-rod" />
+          <span className="antenna-tip" />
+        </div>
         <section className="radio-card" aria-label="HK Radio player">
           <div className={`station-art${isPlaying || isLoading ? " station-art-on" : ""}`} aria-live="polite">
             {(isPlaying || isLoading) && (
@@ -235,6 +247,10 @@ function App() {
             <strong>{isLoading ? "Connecting…" : isPlaying ? "Now playing" : "Ready to listen"}</strong>
             <span>{isLoading ? "Tuning in to the live stream" : isPlaying ? `${currentChannel.band} ${currentChannel.frequency}` : "Press play to tune in"}</span>
           </div>
+        </div>
+
+        <div className="speaker-panel" aria-hidden="true">
+          <div className="speaker-mesh" />
         </div>
 
         {error && <p className="error-message" role="alert">{error}</p>}

@@ -165,10 +165,10 @@ button, input { font: inherit; }
 .channel-nav-empty { color: #7b8492; font-size: 0.78rem; padding: 8px; }
 
 .radio-card {
-  background: #fff;
-  border: 1px solid #dce0e6;
+  background: linear-gradient(145deg, #4a515a, #2c3239);
+  border: 1px solid #1f252b;
   border-radius: 18px;
-  box-shadow: 0 24px 50px rgba(36, 47, 64, 0.16);
+  box-shadow: 0 24px 50px rgba(17, 22, 29, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.12);
   max-width: 390px;
   padding: 20px 20px 24px;
   position: relative;
@@ -182,6 +182,38 @@ button, input { font: inherit; }
   position: relative;
   width: 100%;
   z-index: 1;
+}
+
+.antenna {
+  height: 66px;
+  position: absolute;
+  right: 42px;
+  top: -54px;
+  transform: rotate(12deg);
+  transform-origin: bottom center;
+  width: 20px;
+  z-index: 2;
+}
+
+.antenna-rod {
+  background: linear-gradient(90deg, #171b20, #69717b 48%, #171b20);
+  border-radius: 4px;
+  bottom: 0;
+  height: 62px;
+  left: 7px;
+  position: absolute;
+  width: 6px;
+}
+
+.antenna-tip {
+  background: #12161a;
+  border: 1px solid #737c87;
+  border-radius: 50%;
+  height: 9px;
+  left: 5px;
+  position: absolute;
+  top: 0;
+  width: 9px;
 }
 
 .power-button {
@@ -362,13 +394,14 @@ button, input { font: inherit; }
 }
 
 h1 {
+  color: #f5f7f9;
   font-size: clamp(2.2rem, 9vw, 3.4rem);
   letter-spacing: -0.06em;
   line-height: 0.95;
   margin: 0;
 }
 
-.subtitle { color: #6b7482; margin: 10px 0 22px; }
+.subtitle { color: #c2c8d0; margin: 10px 0 22px; }
 
 .channel-picker {
   align-items: center;
@@ -409,7 +442,7 @@ h1 {
 }
 
 .channel-name {
-  color: #28323e;
+  color: #f2f4f6;
   flex: 1;
   font-size: 0.9rem;
   text-align: center;
@@ -424,14 +457,36 @@ h1 {
 }
 
 .player-controls {
-  border-top: 1px solid #e1e4e9;
+  border-top: 1px solid #626b76;
   gap: 18px;
   padding-top: 22px;
 }
 
 .status { display: flex; flex-direction: column; gap: 5px; }
-.status strong { font-size: 0.95rem; }
-.status span { color: #727c8b; font-size: 0.8rem; }
+.status strong { color: #f2f4f6; font-size: 0.95rem; }
+.status span { color: #c2c8d0; font-size: 0.8rem; }
+
+.speaker-panel {
+  background: linear-gradient(145deg, #30343a, #111418);
+  border: 1px solid #080a0d;
+  border-radius: 10px;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.16), 0 2px 4px rgba(25, 31, 40, 0.2);
+  height: 66px;
+  margin: 22px auto 0;
+  padding: 5px;
+  width: 100%;
+}
+
+.speaker-mesh {
+  background-color: #090b0e;
+  background-image: radial-gradient(#4b5057 0.8px, transparent 0.9px);
+  background-size: 4px 4px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.75);
+  height: 100%;
+  width: 100%;
+}
 
 .error-message {
   color: #b63d4a;
