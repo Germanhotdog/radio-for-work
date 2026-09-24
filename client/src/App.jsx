@@ -1,8 +1,9 @@
 import React from "react";
 import { useEffect, useRef, useState } from "react";
 
-const STREAM_API_URL = "http://localhost:3001/api/stream";
-const CHANNELS_API_URL = "http://localhost:3001/api/channels";
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:3001").replace(/\/$/, "");
+const STREAM_API_URL = `${API_BASE_URL}/api/stream`;
+const CHANNELS_API_URL = `${API_BASE_URL}/api/channels`;
 
 function App() {
   const audioRef = useRef(null);
@@ -11,6 +12,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [channels, setChannels] = useState([]);
   const [selectedChannel, setSelectedChannel] = useState("");
+  const [isChannelNavOpen, setIsChannelNavOpen] = useState(true);
   const [volume, setVolume] = useState(0.8);
   const [error, setError] = useState("");
   const currentChannel = channels.find((channel) => channel.id === selectedChannel) ??
@@ -107,6 +109,19 @@ function App() {
     await playChannel(nextChannel.id);
   }
 
+  async function selectChannel(channelId) {
+    if (!channelId || isLoading) return;
+
+    setError("");
+    setSelectedChannel(channelId);
+
+    if (!isPlaying) return;
+
+    disconnectAudio();
+    setIsPlaying(false);
+    await playChannel(channelId);
+  }
+
   function handleStreamError() {
     if (isDisconnectingRef.current) return;
 
@@ -117,6 +132,50 @@ function App() {
 
   return (
     <main className="app-shell">
+      <button
+        className="channel-nav-toggle"
+        type="button"
+        onClick={() => setIsChannelNavOpen((isOpen) => !isOpen)}
+        aria-expanded={isChannelNavOpen}
+        aria-controls="channel-navigation"
+        aria-label={isChannelNavOpen ? "Hide radio channel navigation" : "Show radio channel navigation"}
+      >
+        <span aria-hidden="true">{isChannelNavOpen ? "‹" : "›"}</span>
+        <span>{isChannelNavOpen ? "Hide channels" : "Channels"}</span>
+      </button>
+      {isChannelNavOpen && (
+        <aside className="channel-nav" id="channel-navigation" aria-label="Radio channel navigation">
+          <div className="channel-nav-header">
+            <div>
+              <p className="channel-nav-eyebrow">扮公 Radio</p>
+              <h2>Channels</h2>
+            </div>
+            <span className={`channel-nav-status${isPlaying ? " channel-nav-status-live" : ""}`}>
+              {isPlaying ? "LIVE" : "OFF"}
+            </span>
+          </div>
+          <nav className="channel-list" aria-label="Available radio channels">
+            {channels.length > 0 ? channels.map((channel) => (
+              <button
+                className={`channel-option${channel.id === selectedChannel ? " channel-option-selected" : ""}`}
+                key={channel.id}
+                type="button"
+                onClick={() => selectChannel(channel.id)}
+                disabled={isLoading}
+                aria-pressed={channel.id === selectedChannel}
+              >
+                <span>
+                  <strong>{channel.name}</strong>
+                  <small>{channel.band}{channel.frequency ? ` · ${channel.frequency}` : ""}</small>
+                </span>
+                {channel.id === selectedChannel && <span className="channel-option-mark">{isPlaying ? "LIVE" : "SELECTED"}</span>}
+              </button>
+            )) : (
+              <p className="channel-nav-empty">Loading channels…</p>
+            )}
+          </nav>
+        </aside>
+      )}
       <div className="radio-device">
         <section className="radio-card" aria-label="HK Radio player">
           <div className={`station-art${isPlaying || isLoading ? " station-art-on" : ""}`} aria-live="polite">
