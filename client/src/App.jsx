@@ -12,8 +12,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [channels, setChannels] = useState([]);
   const [selectedChannel, setSelectedChannel] = useState("");
-  const [isChannelNavOpen, setIsChannelNavOpen] = useState(true);
-  const [volume, setVolume] = useState(0.8);
+  const [isChannelNavOpen, setIsChannelNavOpen] = useState(false);
   const [error, setError] = useState("");
   const currentChannel = channels.find((channel) => channel.id === selectedChannel) ??
     channels[0] ??
@@ -40,12 +39,6 @@ function App() {
       isMounted = false;
     };
   }, []);
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-    }
-  }, [volume]);
 
   function disconnectAudio() {
     const audio = audioRef.current;
@@ -243,20 +236,6 @@ function App() {
             <span>{isLoading ? "Tuning in to the live stream" : isPlaying ? `${currentChannel.band} ${currentChannel.frequency}` : "Press play to tune in"}</span>
           </div>
         </div>
-
-        <label className="volume-control">
-          <span>Volume</span>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={volume}
-            onChange={(event) => setVolume(Number(event.target.value))}
-            aria-label="Volume"
-          />
-          <span>{Math.round(volume * 100)}%</span>
-        </label>
 
         {error && <p className="error-message" role="alert">{error}</p>}
         </section>

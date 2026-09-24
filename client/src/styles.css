@@ -253,7 +253,7 @@ button, input { font: inherit; }
 }
 
 
-.topline, .player-controls, .volume-control {
+.topline, .player-controls {
   align-items: center;
   display: flex;
 }
@@ -432,16 +432,6 @@ h1 {
 .status { display: flex; flex-direction: column; gap: 5px; }
 .status strong { font-size: 0.95rem; }
 .status span { color: #727c8b; font-size: 0.8rem; }
-
-.volume-control {
-  color: #6b7482;
-  font-size: 0.78rem;
-  gap: 12px;
-  margin-top: 26px;
-}
-
-.volume-control input { accent-color: #176cbf; flex: 1; }
-.volume-control > span:last-child { min-width: 34px; text-align: right; }
 
 .error-message {
   color: #b63d4a;
