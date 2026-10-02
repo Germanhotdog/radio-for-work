@@ -1,4 +1,7 @@
-# HK Radio
+# Hea Radio
+
+Try the web app here! It's now on live:
+https://hea-radio-frontend.vercel.app
 
 Full-stack radio livestream app:
 
