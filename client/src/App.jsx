@@ -1,5 +1,6 @@
-import React from "react";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+const NsShaft = React.lazy(() => import("./nsShaft.jsx"));
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:3001").replace(/\/$/, "");
 const STREAM_API_URL = `${API_BASE_URL}/api/stream`;
@@ -13,6 +14,7 @@ function App() {
   const [channels, setChannels] = useState([]);
   const [selectedChannel, setSelectedChannel] = useState("");
   const [isChannelNavOpen, setIsChannelNavOpen] = useState(false);
+  const [activeView, setActiveView] = useState("radio");
   const [error, setError] = useState("");
   const currentChannel = channels.find((channel) => channel.id === selectedChannel) ??
     channels[0] ??
@@ -76,7 +78,6 @@ function App() {
     if (!audio || isLoading) return;
 
     setError("");
-
     if (isPlaying) {
       disconnectAudio();
       setIsPlaying(false);
@@ -107,7 +108,6 @@ function App() {
 
     setError("");
     setSelectedChannel(channelId);
-
     if (!isPlaying) return;
 
     disconnectAudio();
@@ -123,156 +123,159 @@ function App() {
     setError("The radio stream is currently unavailable.");
   }
 
+  function openGame() {
+    setActiveView("game");
+  }
+
   return (
-    <main className="app-shell" onClick={() => isChannelNavOpen && setIsChannelNavOpen(false)}>
-      <button
-        className="channel-nav-toggle"
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation();
-          setIsChannelNavOpen((isOpen) => !isOpen);
-        }}
-        aria-expanded={isChannelNavOpen}
-        aria-controls="channel-navigation"
-        aria-label={isChannelNavOpen ? "Hide radio channel navigation" : "Show radio channel navigation"}
-      >
-        <span aria-hidden="true">{isChannelNavOpen ? "‹" : "›"}</span>
-        <span>{isChannelNavOpen ? "Hide channels" : "Channels"}</span>
-      </button>
-      {isChannelNavOpen && (
-        <aside
-          className="channel-nav"
-          id="channel-navigation"
-          aria-label="Radio channel navigation"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <div className="channel-nav-header">
-            <div>
-              <p className="channel-nav-eyebrow">扮公 Radio</p>
-              <h2>Channels</h2>
-            </div>
-            <span className={`channel-nav-status${isPlaying ? " channel-nav-status-live" : ""}`}>
-              {isPlaying ? "LIVE" : "OFF"}
-            </span>
-          </div>
-          <nav className="channel-list" aria-label="Available radio channels">
-            {channels.length > 0 ? channels.map((channel) => (
-              <button
-                className={`channel-option${channel.id === selectedChannel ? " channel-option-selected" : ""}`}
-                key={channel.id}
-                type="button"
-                onClick={() => selectChannel(channel.id)}
-                disabled={isLoading}
-                aria-pressed={channel.id === selectedChannel}
-              >
-                <span>
-                  <strong>{channel.name}</strong>
-                  <small>{channel.band}{channel.frequency ? ` · ${channel.frequency}` : ""}</small>
+    <>
+      <audio ref={audioRef} onError={handleStreamError} />
+      {activeView === "game" ? (
+        <main className="game-mode-shell">
+          <button className="game-back-button" type="button" onClick={() => setActiveView("radio")}>
+            <span aria-hidden="true">‹</span> Radio
+          </button>
+          <React.Suspense fallback={<div className="game-loading" role="status">落緊樓梯…</div>}>
+            <NsShaft
+              radioPlaying={isPlaying}
+              radioLoading={isLoading}
+              channels={channels}
+              selectedChannel={selectedChannel}
+              onSelectChannel={selectChannel}
+              onToggleRadio={togglePlayback}
+              radioError={error}
+            />
+          </React.Suspense>
+        </main>
+      ) : (
+        <main className="app-shell" onClick={() => isChannelNavOpen && setIsChannelNavOpen(false)}>
+          <button
+            className="channel-nav-toggle"
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              setIsChannelNavOpen((isOpen) => !isOpen);
+            }}
+            aria-expanded={isChannelNavOpen}
+            aria-controls="channel-navigation"
+            aria-label={isChannelNavOpen ? "Hide radio channel navigation" : "Show radio channel navigation"}
+          >
+            <span aria-hidden="true">{isChannelNavOpen ? "‹" : "›"}</span>
+            <span>{isChannelNavOpen ? "Hide channels" : "Channels"}</span>
+          </button>
+          <button className="game-nav-button" type="button" onClick={openGame}>
+            小朋友落Excel
+          </button>
+          {isChannelNavOpen && (
+            <aside
+              className="channel-nav"
+              id="channel-navigation"
+              aria-label="Radio channel navigation"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="channel-nav-header">
+                <div>
+                  <p className="channel-nav-eyebrow">扮公 Radio</p>
+                  <h2>Channels</h2>
+                </div>
+                <span className={`channel-nav-status${isPlaying ? " channel-nav-status-live" : ""}`}>
+                  {isPlaying ? "LIVE" : "OFF"}
                 </span>
-                {channel.id === selectedChannel && <span className="channel-option-mark">{isPlaying ? "LIVE" : "SELECTED"}</span>}
-              </button>
-            )) : (
-              <p className="channel-nav-empty">Loading channels…</p>
+              </div>
+              <nav className="channel-list" aria-label="Available radio channels">
+                {channels.length > 0 ? channels.map((channel) => (
+                  <button
+                    className={`channel-option${channel.id === selectedChannel ? " channel-option-selected" : ""}`}
+                    key={channel.id}
+                    type="button"
+                    onClick={() => selectChannel(channel.id)}
+                    disabled={isLoading}
+                    aria-pressed={channel.id === selectedChannel}
+                  >
+                    <span>
+                      <strong>{channel.name}</strong>
+                      <small>{channel.band}{channel.frequency ? ` · ${channel.frequency}` : ""}</small>
+                    </span>
+                    {channel.id === selectedChannel && <span className="channel-option-mark">{isPlaying ? "LIVE" : "SELECTED"}</span>}
+                  </button>
+                )) : (
+                  <p className="channel-nav-empty">Loading channels…</p>
+                )}
+              </nav>
+            </aside>
+          )}
+          <div className="radio-device">
+            <div className="antenna" aria-hidden="true">
+              <span className="antenna-rod" />
+              <span className="antenna-tip" />
+            </div>
+            <section className="radio-card" aria-label="HK Radio player">
+              <div className={`station-art${isPlaying || isLoading ? " station-art-on" : ""}`} aria-live="polite">
+                {(isPlaying || isLoading) && (
+                  <>
+                    <div className="display-topline">
+                      <span>{currentChannel.band}</span>
+                      <span>{isLoading ? "○ TUNING" : "● LIVE"}</span>
+                    </div>
+                    <strong className="display-channel">{currentChannel.name}</strong>
+                    <div className="display-frequency">
+                      <span>{currentChannel.frequency || "Podcast"}</span>
+                      {currentChannel.frequency && <small>{currentChannel.band}</small>}
+                    </div>
+                    <div className="display-meter">
+                      {Array.from({ length: 18 }, (_, index) => <span key={index} />)}
+                    </div>
+                    <div className="display-footer">
+                      <span>PRESET {String(channels.findIndex((channel) => channel.id === selectedChannel) + 1).padStart(2, "0")}/{String(channels.length).padStart(2, "0")}</span>
+                      <span>{isLoading ? "CONNECTING" : "SIGNAL LOCKED"}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+              <p className="eyebrow">Office Hea radio</p>
+              <h1>扮公 Radio</h1>
+              <p className="subtitle">slack off for work-life balance</p>
+              <div className="channel-picker" aria-label="Switch radio channel">
+                <button className="channel-button" type="button" onClick={() => switchChannel(-1)} aria-label="Previous radio channel" disabled={isLoading || channels.length === 0}>
+                  {isLoading ? "…" : "⏮"}
+                </button>
+                <strong className="channel-name">
+                  {currentChannel.name}
+                  <small>{currentChannel.band}{currentChannel.frequency ? ` · ${currentChannel.frequency}` : ""}</small>
+                </strong>
+                <button className="channel-button" type="button" onClick={() => switchChannel(1)} aria-label="Next radio channel" disabled={isLoading || channels.length === 0}>
+                  {isLoading ? "…" : "⏭"}
+                </button>
+              </div>
+              <div className="player-controls">
+                <div className="status">
+                  <strong>{isLoading ? "Connecting…" : isPlaying ? "Now playing" : "Ready to listen"}</strong>
+                  <span>{isLoading ? "Tuning in to the live stream" : isPlaying ? `${currentChannel.band} ${currentChannel.frequency}` : "Press play to tune in"}</span>
+                </div>
+              </div>
+              <div className="speaker-panel" aria-hidden="true"><div className="speaker-mesh" /></div>
+              {error && <p className="error-message" role="alert">{error}</p>}
+            </section>
+            <button
+              className="power-button"
+              type="button"
+              onClick={togglePlayback}
+              aria-label={isLoading ? "Loading radio" : isPlaying ? "Turn radio off" : "Turn radio on"}
+              disabled={isLoading}
+            >
+              <span className="power-icon">⏻</span>
+            </button>
+            {!isPlaying && !isLoading && (
+              <span className="power-hint" aria-live="polite">
+                Click to start
+                <span className="power-hint-arrow" aria-hidden="true">→</span>
+              </span>
             )}
-          </nav>
-        </aside>
+          </div>
+          <p className="footer-note">Created by Jacky Kwan.</p>
+        </main>
       )}
-      <div className="radio-device">
-        <div className="antenna" aria-hidden="true">
-          <span className="antenna-rod" />
-          <span className="antenna-tip" />
-        </div>
-        <section className="radio-card" aria-label="HK Radio player">
-          <div className={`station-art${isPlaying || isLoading ? " station-art-on" : ""}`} aria-live="polite">
-            {(isPlaying || isLoading) && (
-              <>
-                <div className="display-topline">
-                  <span>{currentChannel.band}</span>
-                  <span>{isLoading ? "○ TUNING" : "● LIVE"}</span>
-                </div>
-                <strong className="display-channel">{currentChannel.name}</strong>
-                <div className="display-frequency">
-                  <span>{currentChannel.frequency || "Podcast"}</span>
-                  {currentChannel.frequency && <small>{currentChannel.band}</small>}
-                </div>
-                <div className="display-meter">
-                  {Array.from({ length: 18 }, (_, index) => (
-                    <span key={index} />
-                  ))}
-                </div>
-                <div className="display-footer">
-                  <span>PRESET {String(channels.findIndex((channel) => channel.id === selectedChannel) + 1).padStart(2, "0")}/{String(channels.length).padStart(2, "0")}</span>
-                  <span>{isLoading ? "CONNECTING" : "SIGNAL LOCKED"}</span>
-                </div>
-              </>
-            )}
-          </div>
-
-        <p className="eyebrow">Office Hea radio</p>
-        <h1>扮公 Radio</h1>
-        <p className="subtitle">slack off for work-life balance</p>
-
-        <div className="channel-picker" aria-label="Switch radio channel">
-          <button
-            className="channel-button"
-            type="button"
-            onClick={() => switchChannel(-1)}
-            aria-label={isLoading ? "Loading radio channel" : "Previous radio channel"}
-            disabled={isLoading || channels.length === 0}
-          >
-            {isLoading ? "…" : "⏮"}
-          </button>
-          <strong className="channel-name">
-            {currentChannel.name}
-            <small>{currentChannel.band}{currentChannel.frequency ? ` · ${currentChannel.frequency}` : ""}</small>
-          </strong>
-          <button
-            className="channel-button"
-            type="button"
-            onClick={() => switchChannel(1)}
-            aria-label={isLoading ? "Loading radio channel" : "Next radio channel"}
-            disabled={isLoading || channels.length === 0}
-          >
-            {isLoading ? "…" : "⏭"}
-          </button>
-        </div>
-
-        <audio
-          ref={audioRef}
-          onError={handleStreamError}
-        />
-
-        <div className="player-controls">
-          <div className="status">
-            <strong>{isLoading ? "Connecting…" : isPlaying ? "Now playing" : "Ready to listen"}</strong>
-            <span>{isLoading ? "Tuning in to the live stream" : isPlaying ? `${currentChannel.band} ${currentChannel.frequency}` : "Press play to tune in"}</span>
-          </div>
-        </div>
-
-        <div className="speaker-panel" aria-hidden="true">
-          <div className="speaker-mesh" />
-        </div>
-
-        {error && <p className="error-message" role="alert">{error}</p>}
-        </section>
-        <button
-          className="power-button"
-          type="button"
-          onClick={togglePlayback}
-          aria-label={isLoading ? "Loading radio" : isPlaying ? "Turn radio off" : "Turn radio on"}
-          disabled={isLoading}
-        >
-          <span className="power-icon">⏻</span>
-        </button>
-        {!isPlaying && !isLoading && (
-          <span className="power-hint" aria-live="polite">
-            Click to start
-            <span className="power-hint-arrow" aria-hidden="true">→</span>
-          </span>
-        )}
-      </div>
-      <p className="footer-note">Created by Jacky Kwan. Radio broadcast provided by Radio Garden.</p>
-    </main>
+    </>
   );
 }
 

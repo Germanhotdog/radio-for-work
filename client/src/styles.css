@@ -61,6 +61,44 @@ button, input { font: inherit; }
 .channel-nav-toggle:hover { background: #2c3948; }
 .channel-nav-toggle > span:first-child { font-size: 1.1rem; line-height: 0.7; }
 
+.game-nav-button,
+.game-back-button {
+  align-items: center;
+  background: #202a35;
+  border: 1px solid #344252;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-size: 0.72rem;
+  gap: 7px;
+  padding: 9px 12px;
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  z-index: 5;
+}
+
+.game-nav-button:hover,
+.game-back-button:hover { background: #2c3948; }
+
+.game-mode-shell {
+  min-height: 100vh;
+  position: relative;
+}
+
+.game-loading {
+  align-items: center;
+  color: #107c41;
+  display: flex;
+  font: 600 0.9rem ui-monospace, SFMono-Regular, Menlo, monospace;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.game-back-button { position: fixed; }
+.game-back-button > span { font-size: 1.1rem; line-height: 0.7; }
+
 .channel-nav {
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid #dce0e6;
@@ -512,6 +550,22 @@ h1 {
     width: 270px;
   }
   .channel-nav-toggle { left: 16px; top: 16px; }
+  .game-nav-button { right: 16px; top: 16px; }
+  .game-back-button { right: 16px; top: 16px; }
   .radio-card { padding: 18px; }
   .station-art { height: 190px; }
+  .power-hint {
+    color: #687384;
+    flex-direction: row-reverse;
+    left: 4px;
+    z-index: 3;
+  }
+  .power-hint-arrow {
+    animation-name: hint-arrow-mobile;
+  }
+}
+
+@keyframes hint-arrow-mobile {
+  0%, 100% { transform: translateX(0) rotate(180deg); }
+  50% { transform: translateX(4px) rotate(180deg); }
 }
